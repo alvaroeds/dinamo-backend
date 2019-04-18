@@ -2,9 +2,11 @@ package commons
 
 import (
         "crypto/rsa"
+        "github.com/alvaroenriqueds/Dinamo/dinamo-backend/models"
         "github.com/dgrijalva/jwt-go"
         "io/ioutil"
         "log"
+        "time"
 )
 
 var (
@@ -34,6 +36,24 @@ func init()  {
         }
 }
 
-func GenerateJWT(){
+func GenerateJWT(user models.User) string{
+        claims := models.Claim{
+                User : user,
+                StandardClaims: jwt.StandardClaims{
+                        ExpiresAt: time.Now().Add(time.Hour*1).Unix(),
+                        //Objetivo
+                        Issuer: "Generar JWT",
+                },
+        }
 
+        //convirtiendo el claim a token
+        token := jwt.NewWithClaims(jwt.SigningMethodRS256, claims)
+        //convirtiendo el token a string
+        result, err := token.SignedString(privateKey)
+        if err != nil {
+                log.Fatal("No se pudo firmar el token")
+        }
+
+        //retornamos el token en un string
+        return result
 }
