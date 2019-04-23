@@ -20,7 +20,7 @@ func init()  {
                 log.Fatal("No se pudo leer el archivo privado")
         }
 
-        publicBytes, err := ioutil.ReadFile("./keys/private.rsa")
+        publicBytes, err := ioutil.ReadFile("./keys/public.rsa")
         if err != nil {
                 log.Fatal("No se pudo leer el archivo publico")
         }

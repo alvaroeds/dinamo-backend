@@ -41,15 +41,15 @@ func CreateUser(c echo.Context) error  {
         defer db.Close()
 
         //se inserta el usuario
-        q := "insert into users (username, email, fullname, password, picture) values ($1, $2, $3, $4, $5) RETURNING id;"
+        q := "insert into usuario (email, password) values ($1, $2) RETURNING id;"
 
         stmt, err := db.Prepare(q)
         if err != nil {
-                fmt.Printf("Error al crear el registro: %s", err)
+                fmt.Printf("Error al preparar el registro: %s", err)
                 return c.NoContent(http.StatusBadRequest)
         }
 
-        row := stmt.QueryRow(user.Username, user.Email, user.Fullname, user.Password, user.Picture)
+        row := stmt.QueryRow(user.Email,user.Password)
         err = row.Scan(&user.Id)
         if err != nil {
                 fmt.Printf("Error al scanear el registro: %s", err)
@@ -59,7 +59,7 @@ func CreateUser(c echo.Context) error  {
         user.ConfirmPassword = ""
 
         //generamos el token
-        token := commons .GenerateJWT(user)
+        token := commons.GenerateJWT(user)
         result := token
 
         return c.JSON(http.StatusOK, echo.Map{
@@ -68,7 +68,7 @@ func CreateUser(c echo.Context) error  {
         })
 }
 
-//LoginUser es para que se logueen lo usuarios
+//LoginUs er es para que se logueen lo usuarios
 func LoginUser(c echo.Context) error {
         user := models.User{}
 
@@ -79,21 +79,27 @@ func LoginUser(c echo.Context) error {
                 return c.NoContent(http.StatusBadRequest)
         }
 
+        fmt.Println(user)
         //se codifica la contraseña a sha256
         pass := sha256.Sum256([]byte(user.Password))
         pwd := fmt.Sprintf("%x", pass)
         user.Password = pwd
+
+        fmt.Println(user)
+        fmt.Println(user.Email)
+
 
         //se abre una conexion con al BD
         db := configuration.GetConnectionPsql()
         defer db.Close()
 
         //se verifica si el usuario existe
-        q := "SELECT c.id, c.username, c.fullname, c.picture FROM users c WHERE c.email=$1 AND c.password=$2;"
+        q := "SELECT u.id FROM usuario u WHERE u.email=$1 AND u.password=$2;"
+
 
         stmt, err := db.Prepare(q)
         if err != nil {
-                fmt.Printf("Error al crear el registro: %s", err)
+                fmt.Printf("Error al preparar el registro: %s", err)
                 return c.NoContent(http.StatusBadRequest)
         }
 
@@ -105,7 +111,7 @@ func LoginUser(c echo.Context) error {
         }
         user.Password = ""
 
-        err = row.Scan(&user.Id, &user.Username, &user.Fullname, &user.Picture)
+        err = row.Scan(&user.Id)
         if err != nil {
                 fmt.Printf("Error al scanear el registro: %s", err)
                 return c.NoContent(http.StatusBadRequest)
@@ -113,7 +119,7 @@ func LoginUser(c echo.Context) error {
 
         //generamos el token
         token := commons.GenerateJWT(user)
-        result := models.ResponseToken{Token: token}
+        result := token
 
         /*
         jsonr, err := json.Marshal(result)
@@ -130,4 +136,3 @@ func LoginUser(c echo.Context) error {
                 "usuario": user,
         })
 }
-
