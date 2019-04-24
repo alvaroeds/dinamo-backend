@@ -1,7 +1,7 @@
 package main
 
 import (
-        "github.com/alvaroenriqueds/Dinamo/dinamo-backend/controllers"
+        "github.com/alvaroenriqueds/dinamo-backend/controllers"
         "github.com/labstack/echo"
 )
 

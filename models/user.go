@@ -6,6 +6,6 @@ type User struct {
 	Name            string `json:"name,omitempty"`
 	LastName         string `json:"lastname,omitempty"`
 	Password        string `json:"password,omitempty"`
-	ConfirmPassword string `json:"confirm_password,omitempty"`
+	ConfirmPassword string `json:"confirmpassword,omitempty"`
 	Numero          uint   `json:"numero,omitempty"`
 }

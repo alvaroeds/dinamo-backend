@@ -4,10 +4,9 @@ import (
         "crypto/sha256"
         "encoding/json"
         "fmt"
-        "github.com/alvaroenriqueds/Dinamo/dinamo-backend/commons"
-        "github.com/alvaroenriqueds/Dinamo/dinamo-backend/configuration"
-        "github.com/alvaroenriqueds/Dinamo/dinamo-backend/models"
-
+        "github.com/alvaroenriqueds/dinamo-backend/commons"
+        "github.com/alvaroenriqueds/dinamo-backend/configuration"
+        "github.com/alvaroenriqueds/dinamo-backend/models"
         "github.com/labstack/echo"
         "net/http"
 )
@@ -25,7 +24,7 @@ func CreateUser(c echo.Context) error  {
 
         //se confirma que las contraseñas seas iguales
         if user.Password != user.ConfirmPassword {
-                fmt.Printf("Las contraseñas no coinciden: %s1 | %s2", user.Password, models.User{}.ConfirmPassword)
+                fmt.Printf("Las contraseñas no coinciden: %s | %s", user.Password, user.ConfirmPassword)
                 return c.NoContent(http.StatusBadRequest)
         }
 
@@ -41,7 +40,7 @@ func CreateUser(c echo.Context) error  {
         defer db.Close()
 
         //se inserta el usuario
-        q := "insert into usuario (email, password) values ($1, $2) RETURNING id;"
+        q := "insert into usuario (email, password, name, lastname, numero) values ($1, $2, $3, $4, $5) RETURNING id;"
 
         stmt, err := db.Prepare(q)
         if err != nil {
@@ -49,7 +48,7 @@ func CreateUser(c echo.Context) error  {
                 return c.NoContent(http.StatusBadRequest)
         }
 
-        row := stmt.QueryRow(user.Email,user.Password)
+        row := stmt.QueryRow(user.Email,user.Password, user.Name, user.LastName, user.Numero)
         err = row.Scan(&user.Id)
         if err != nil {
                 fmt.Printf("Error al scanear el registro: %s", err)
@@ -94,7 +93,7 @@ func LoginUser(c echo.Context) error {
         defer db.Close()
 
         //se verifica si el usuario existe
-        q := "SELECT u.id FROM usuario u WHERE u.email=$1 AND u.password=$2;"
+        q := "SELECT u.id, u.name, u.lastname, u.numero FROM usuario u WHERE u.email=$1 AND u.password=$2;"
 
 
         stmt, err := db.Prepare(q)
@@ -111,7 +110,7 @@ func LoginUser(c echo.Context) error {
         }
         user.Password = ""
 
-        err = row.Scan(&user.Id)
+        err = row.Scan(&user.Id, &user.Name, &user.LastName, &user.Numero)
         if err != nil {
                 fmt.Printf("Error al scanear el registro: %s", err)
                 return c.NoContent(http.StatusBadRequest)
