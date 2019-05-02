@@ -4,9 +4,9 @@ import (
         "crypto/sha256"
         "encoding/json"
         "fmt"
-        "github.com/alvaroenriqueds/dinamo-backend/commons"
-        "github.com/alvaroenriqueds/dinamo-backend/configuration"
-        "github.com/alvaroenriqueds/dinamo-backend/models"
+        "github.com/alvaroenriqueds/Dinamo/dinamo-backend/commons"
+        "github.com/alvaroenriqueds/Dinamo/dinamo-backend/configuration"
+        "github.com/alvaroenriqueds/Dinamo/dinamo-backend/models"
         "github.com/labstack/echo"
         "net/http"
 )
