@@ -22,5 +22,10 @@
 
 # Archivo de configuración
 config.json
+main
+./main
+dinamo-backend
+./dinamo-backend
+
 
 # End of https://www.gitignore.io/api/go

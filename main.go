@@ -8,12 +8,13 @@ import (
 func main(){
         e := echo.New()
 
-        e.Static("/", "public")
+        e.Static("/", "./public")
 
         e.POST("/login", controllers.LoginUser)
         e.POST("/register", controllers.CreateUser)
         e.GET("/validate", controllers.ValidateToken)
         e.POST("/upload", controllers.Upload)
+        e.Router()
 
         e.Start(":2020")
 }
