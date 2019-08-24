@@ -1,7 +1,7 @@
 package routes
 
 import (
-        "../controllers"
+        "github.com/alvaroenriqueds/Dinamo/dinamo-backend/controllers"
         "github.com/labstack/echo"
         "github.com/labstack/echo/middleware"
         "net/http"
@@ -26,16 +26,17 @@ func Init()  {
         e.Static("/", "../public")
 
         //Se crean los endpoints
+        ///POST
         e.POST("/login", controllers.LoginUser)
         e.POST("/register", controllers.CreateUser)
-        e.GET("/validate", controllers.ValidateToken)
         e.POST("/upload", controllers.Upload)
 
-        //se inicia el servidor en el puerto x
-        //e.Start(":2020")
-        e.Logger.Fatal(
-                e.Start(":2020"),
-                )
+        //GET
+        e.GET("/validate", controllers.ValidateToken)
 
-        //return  e
+        //se inicia el servidor en el puerto x
+        //e.Start(":5050")
+        e.Logger.Fatal(
+                e.Start(":5050"),
+                )
 }

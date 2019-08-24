@@ -1,7 +1,7 @@
 package main
 
 import (
-        "./routes"
+        "github.com/alvaroenriqueds/Dinamo/dinamo-backend/routes"
 )
 
 func main(){

@@ -1,8 +1,6 @@
-package controllers
+package user
 
 import (
-        "crypto/sha256"
-        "encoding/json"
         "fmt"
         "github.com/alvaroenriqueds/Dinamo/dinamo-backend/commons"
         "github.com/alvaroenriqueds/Dinamo/dinamo-backend/configuration"
@@ -12,64 +10,7 @@ import (
         "net/http"
 )
 
-//CreateUser funcion para crear un usuario
-func CreateUser(c echo.Context) error  {
-        user := models.User{}
-
-        //se lee el json entrante y vuelca en el modelo user
-        err := json.NewDecoder(c.Request().Body).Decode(&user)
-        if err != nil {
-                fmt.Printf("Error al leer el usuario a registrar: %s", err)
-                return c.NoContent(http.StatusBadRequest)
-        }
-
-        //se confirma que las contraseñas seas iguales
-        if user.Password != user.ConfirmPassword {
-                fmt.Printf("Las contraseñas no coinciden: %s | %s", user.Password, user.ConfirmPassword)
-                return c.NoContent(http.StatusBadRequest)
-        }
-
-        //se codifica la contraseña en sha256
-        pass := sha256.Sum256([]byte(user.Password))
-        pwd := fmt.Sprintf("%x", pass)
-        user.Password = pwd
-
-        //agregar validacion para la imagen del usuario
-
-        //se abre conexion con la base de datos
-        db := configuration.GetConnectionPsql()
-        defer db.Close()
-
-        //se inserta el usuario
-        q := "insert into usuario (email, password, name, lastname, numero) values ($1, $2, $3, $4, $5) RETURNING id;"
-
-        stmt, err := db.Prepare(q)
-        if err != nil {
-                fmt.Printf("Error al preparar el registro: %s", err)
-                return c.NoContent(http.StatusBadRequest)
-        }
-
-        row := stmt.QueryRow(user.Email,user.Password, user.Name, user.LastName, user.Numero)
-        err = row.Scan(&user.Id)
-        if err != nil {
-                fmt.Printf("Error al scanear el registro: %s", err)
-                return c.NoContent(http.StatusBadRequest)
-        }
-        user.Password = ""
-        user.ConfirmPassword = ""
-
-        //generamos el token
-        token := commons.GenerateJWT(user)
-        result := token
-
-        return c.JSON(http.StatusOK, echo.Map{
-                "token": result,
-                "usuario": user,
-        })
-}
-
-//LoginUs er es para que se logueen lo usuarios
-func LoginUser(c echo.Context) error {
+func Service_user_login(c echo.Context) error {
         //variables/obejtos
         user := models.User{}
         msg := models.Error{}
@@ -88,14 +29,14 @@ func LoginUser(c echo.Context) error {
         }
 
         /*
-           //confirmammos ek pass y confirm_pass
-           if user.Password != user.ConfirmPassword {
-                   msg.ErrorCode = "user_login_confirm"
-                   msg.Message = "LAS CONTRASEÑAS NO COINCIDEN"
-                   msg.Error = err.Error()
+        //confirmammos ek pass y confirm_pass
+        if user.Password != user.ConfirmPassword {
+                msg.ErrorCode = "user_login_confirm"
+                msg.Message = "LAS CONTRASEÑAS NO COINCIDEN"
+                msg.Error = err.Error()
 
-                   return c.JSON(400, msg)
-           }
+                return c.JSON(400, msg)
+        }
         */
 
         //codificamos la contraseña antes de introducirla a la BD
