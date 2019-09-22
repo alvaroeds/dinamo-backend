@@ -27,8 +27,11 @@ func Init()  {
 
         //Se crean los endpoints
         ///POST
-        e.POST("/login", controllers.LoginUser)
-        e.POST("/register", controllers.CreateUser)
+        //e.POST("/login", controllers.LoginUser)
+        user_Login(e)
+
+
+
         e.POST("/upload", controllers.Upload)
 
         //GET

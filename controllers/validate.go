@@ -42,10 +42,8 @@ func ValidateToken(c echo.Context) error{
                 //ctx := context.WithValue(c.Request().Context(), "user", token.Claims.(*models.Claim).User)
                 //next(w, r.WithContext(ctx))
                 fmt.Fprintln(c.Response(), "Bienvenido al sistema")
-                return c.String(http.StatusOK, "Si ingreso")
+                return c.String(http.StatusOK, "true")
         }else {
-                return c.String(http.StatusUnauthorized, "Su token no es validp")
+                return c.String(http.StatusUnauthorized, "false")
         }
-
-
 }
