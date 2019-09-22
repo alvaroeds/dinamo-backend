@@ -6,10 +6,11 @@ import (
 )
 
 func user_Login(e *echo.Echo)  {
-        e.POST("/login", controllers.LoginUser)
-        e.POST("/register", controllers.CreateUser)
+        //crud
+        e.POST("/api/v1/register", controllers.CreateUser)
+        e.POST("/api/v1/login", controllers.LoginUser)
 
-        //
-        e.PUT("/user", controllers.UpdateUser)
-        e.GET("/user", controllers.DataUser)
+        //traer la data
+        e.PUT("/api/v1/user", controllers.UpdateUser)
+        e.GET("/api/v1/user", controllers.DataUser)
 }

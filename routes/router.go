@@ -8,13 +8,14 @@ import (
 )
 
 //func Init() *echo.Echo {
-func Init()  {
+func Init(e *echo.Echo)  {
         //se inicia echo
-        e := echo.New()
+
 
         // Middleware
         e.Use(middleware.Logger())
         e.Use(middleware.Recover())
+
 
         e.Use(middleware.CORSWithConfig(middleware.CORSConfig{
                 // AllowOrigins: []string{"https://potencie.com", "https://potencie.com"},
@@ -25,21 +26,11 @@ func Init()  {
         //se levanta el front de pruebas
         e.Static("/", "../public")
 
-        //Se crean los endpoints
-        ///POST
-        //e.POST("/login", controllers.LoginUser)
+        //Se crean los endpoint
         user_Login(e)
 
 
 
         e.POST("/upload", controllers.Upload)
-
-        //GET
         e.GET("/validate", controllers.ValidateToken)
-
-        //se inicia el servidor en el puerto x
-        //e.Start(":5050")
-        e.Logger.Fatal(
-                e.Start(":5050"),
-                )
 }
