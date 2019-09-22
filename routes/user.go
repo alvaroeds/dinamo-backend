@@ -5,7 +5,7 @@ import (
         "github.com/labstack/echo"
 )
 
-func user_Login(e *echo.Echo)  {
+func user(e *echo.Echo)  {
         //crud
         e.POST("/api/v1/register", controllers.CreateUser)
         e.POST("/api/v1/login", controllers.LoginUser)

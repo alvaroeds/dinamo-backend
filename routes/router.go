@@ -27,7 +27,8 @@ func Init(e *echo.Echo)  {
         e.Static("/", "../public")
 
         //Se crean los endpoint
-        user_Login(e)
+        user(e)
+        folder(e)
 
 
 
