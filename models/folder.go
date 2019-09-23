@@ -8,7 +8,7 @@ import (
 type Folder struct {
 	Id       int32      `json:"id"`
 	IdUser   int32      `json:"id_user"`
-	IdRoom   int32      `json:"id_room"`
+	IdRoom   *int32      `json:"id_room"`
 	Name     string     `json:"name"`
 	Tags     string     `json:"tags,omitempty"`
 	Calendar []Calendar `json:"calendar,omitempty"`
@@ -34,10 +34,15 @@ func Create_Folder(folder *Folder) (string, error) {
 		fmt.Printf("Error al scanear el registro: %s", err)
 		return "", err
 	}
-
-	if folder.Calendar != nil {
-		for i := 0; i <= len(folder.Calendar); i++ {
-			Create_Calendar(&folder.Calendar[i])
+        fmt.Println(len(folder.Calendar))
+	if folder.Calendar != nil && len(folder.Calendar) > 0 {
+		for i := 0; i < len(folder.Calendar); i++ {
+		        fmt.Println(folder.Calendar[i])
+			resp, err :=Create_Calendar(&folder.Calendar[i], folder.Id)
+                        if err != nil {
+                                fmt.Println("NO TODO SALIO BIEN")
+                        }
+			fmt.Println(resp)
 		}
 	}
 
@@ -59,13 +64,14 @@ func Update_Folder(folder *Folder) (string, error) {
                 return "", err
         }
 
-        row := stmt.QueryRow(folder.IdRoom, folder.Name, folder.Tags, folder.Id)
-        if row == nil {
+        _, err = stmt.Query(folder.IdRoom, folder.Name, folder.Tags, folder.Id)
+        if  err != nil {
                 fmt.Printf("Error al scanear el registro: %s", err)
                 return "", err
         }
 
-        if folder.Calendar != nil {
+        if folder.Calendar != nil && len(folder.Calendar) > 0 {
+                fmt.Println("INGRESE AL CALENDAR UPDATE")
                 for i := 0; i <= len(folder.Calendar); i++ {
                         //aca insertamos el calendario diractamente
                 }
@@ -75,13 +81,13 @@ func Update_Folder(folder *Folder) (string, error) {
 }
 
 
-func Data_Folder(id string, user *User) (string, error) {
+func Data_Folder(id string, folder *[]Folder) (string, error) {
         //abrimos conexcion con la BBDD
         db := configuration.GetConnectionPsql()
         defer db.Close()
 
         //se verifica si el usuario existe
-        q := "SELECT u.id, u.name, u.lastname, u.phone_number, u.email FROM usuario_dinamo u WHERE u.id=$1;"
+        q := "select f.id, f.id_user, f.id_room, f.name, f.tags from folder f where f.id_user=$1"
 
         stmt, err := db.Prepare(q)
         if err != nil {
@@ -90,15 +96,29 @@ func Data_Folder(id string, user *User) (string, error) {
                 return "", err
         }
 
-        row := stmt.QueryRow(id)
-        if row == nil {
+        rows, err := stmt.Query(id)
+        if err != nil {
                 fmt.Println("USUARIO O CLAVE NO VALIDO")
 
                 return "", err
         }
+        row := Folder{}
+        for rows.Next() {
+                err := rows.Scan(
+                        &row.Id,
+                        &row.IdUser,
+                        &row.IdRoom,
+                        &row.Name,
+                        &row.Tags,
+                )
+                if err != nil {
+                        fmt.Println("3")
+                        return "", err
+                }
 
-        row.Scan(&user.Id, &user.Name, &user.LastName, &user.PhoneNumber, &user.Email)
-        user.Password = ""
+                row.Calendar, err = Data_Calendar(row.Id)
+                *folder = append(*folder, row)
+        }
 
         return "Se trajo toda la data", nil
 }

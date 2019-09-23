@@ -27,7 +27,7 @@ func CreateUser(c echo.Context) error  {
         }
 
         //se confirma que las contraseñas seas iguales
-        if user.Password != user.ConfirmPassword {
+        if user.Password != user.ConfirmPassword || user.Password == "" || user.ConfirmPassword == ""  {
                 msg.ErrorCode = "user_created_confirm"
                 msg.Message = "LAS CONTRASEÑAS NO COINCIDEN"
                 msg.Error = err.Error()
@@ -42,6 +42,13 @@ func CreateUser(c echo.Context) error  {
 
         //se crea el nuevo usuario
         resp, err := models.Create_User(&user)
+        if err != nil {
+                msg.ErrorCode = "user_created_error"
+                msg.Message = "No se pudo registrar"
+                msg.Error = err.Error()
+
+                return c.JSON(500, msg)
+        }
 
         //generamos el token
         token := commons.GenerateJWT(user)
@@ -130,12 +137,24 @@ func DataUser(c echo.Context) error {
         user := models.User{}
 
         id := c.QueryParam("user")
+        if id == "" {
+                fmt.Println("ERROR AL VOLCAS LA DATA ENTRANTE")
+                msg.Message = "Se espera un parametro user"
+                msg.ErrorCode = "data_user_query"
+                msg.Error = "SE ESPERA UN QUERY PARAM USER"
+
+                return c.JSON(400, msg)
+        }
         fmt.Printf("%s", id)
 
 
         resp, err := models.Data_User(id, &user)
         if err != nil {
+                msg.Message = "No se pudo traer la data"
+                msg.ErrorCode = "data_user_get"
+                msg.Error = err.Error()
 
+                return c.JSON(400, msg)
         }
 
         return c.JSON(200, echo.Map{

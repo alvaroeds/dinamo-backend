@@ -15,9 +15,9 @@ func CreateFolder(c echo.Context) error {
 	err := c.Bind(&folder)
 	if err != nil {
 		log.Print(err)
-		fmt.Println("ERROR AL VOLCAS LA DATA ENTRANTE")
+		fmt.Println("ERROR AL VOLCAR LA DATA ENTRANTE")
 
-		msg.ErrorCode = "user_created_bind"
+		msg.ErrorCode = "folder_created_bind"
 		msg.Message = "ERROR AL ACEPTAR LA DATA ENTRANTE"
 		msg.Error = err.Error()
 
@@ -26,10 +26,19 @@ func CreateFolder(c echo.Context) error {
 
 	//se crea el nuevo usuario
 	resp, err := models.Create_Folder(&folder)
+        if err != nil {
+                log.Print(err)
+
+                msg.ErrorCode = "folder_created_bind"
+                msg.Message = "ERROR AL CREAR TU ESPACIO"
+                msg.Error = err.Error()
+
+                return c.JSON(500, msg)
+        }
 
 	return c.JSON(http.StatusOK, echo.Map{
 		"message":   resp,
-		"folder_id": folder.Id,
+		"folder": folder,
 	})
 }
 
@@ -51,6 +60,15 @@ func UpdateFolder(c echo.Context) error  {
 
         //se crea el nuevo usuario
         resp, err := models.Update_Folder(&folder)
+        if err != nil {
+                log.Print(err)
+
+                msg.ErrorCode = "folder_update_null"
+                msg.Message = "ERROR"
+                msg.Error = err.Error()
+
+                return c.JSON(400, msg)
+        }
 
         return c.JSON(http.StatusOK, echo.Map{
                 "message": resp,
@@ -58,19 +76,23 @@ func UpdateFolder(c echo.Context) error  {
         })
 }
 
-/*
+
 func DataFolder(c echo.Context) error  {
 
         id := c.QueryParam("user")
         fmt.Printf("%s", id)
 
+        folder := []models.Folder{}
 
         //se crea el nuevo usuario
-        folder, err := models.Data_Folder(id)
+        resp, err := models.Data_Folder(id, &folder)
+        if err != nil {
+                return c.NoContent(500)
+        }
 
         return c.JSON(http.StatusOK, echo.Map{
                 "message": resp,
-                "folder_id": folder.Id,
+                "folder": folder,
         })
 }
-*/
+

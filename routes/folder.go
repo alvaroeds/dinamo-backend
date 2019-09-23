@@ -8,9 +8,8 @@ import (
 func folder(e *echo.Echo)  {
         //crud
         e.POST("/api/v1/create/folder", controllers.CreateFolder)
-        //e.POST("/api/v1/delete/folder", controllers.LoginUser)
 
         //traer la data
         e.PUT("/api/v1/folder", controllers.UpdateFolder)
-        //e.GET("/api/v1/folder", controllers.DataFolder)
+        e.GET("/api/v1/folder", controllers.DataFolder)
 }

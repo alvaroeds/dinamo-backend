@@ -23,7 +23,7 @@ func Create_User(user *User)  (string, error){
         defer db.Close()
 
         //se inserta el usuario
-        q := "insert into user_dinamo (email, password, phone_number) values ($1, $2, $3) RETURNING id;"
+        q := "insert into user_dinamo (email,name,lastname,password,phone_number) values ($1,$2,$3,$4,$5) RETURNING id;"
 
         stmt, err := db.Prepare(q)
         if err != nil {
@@ -31,7 +31,7 @@ func Create_User(user *User)  (string, error){
                 return "", err
         }
 
-        row := stmt.QueryRow(user.Email, user.Password, user.PhoneNumber)
+        row := stmt.QueryRow(user.Email,user.Name,user.LastName,user.Password,user.PhoneNumber)
         err = row.Scan(&user.Id)
         if err != nil {
                 fmt.Printf("Error al scanear el registro: %s", err)
@@ -109,7 +109,7 @@ func Data_User(id string, user *User) (string, error) {
         defer db.Close()
 
         //se verifica si el usuario existe
-        q := "SELECT u.id, u.name, u.lastname, u.phone_number, u.email FROM usuario_dinamo u WHERE u.id=$1;"
+        q := "SELECT u.id, u.name, u.lastname, u.phone_number, u.email FROM user_dinamo u WHERE u.id=$1;"
 
         stmt, err := db.Prepare(q)
         if err != nil {
@@ -122,12 +122,16 @@ func Data_User(id string, user *User) (string, error) {
         row := stmt.QueryRow(id)
         if row == nil {
                 log.Print(err)
-                fmt.Println("USUARIO O CLAVE NO VALIDO")
 
                 return "", err
         }
 
-        row.Scan(&user.Id, &user.Name, &user.LastName, &user.PhoneNumber, &user.Email)
+        err = row.Scan(&user.Id, &user.Name, &user.LastName, &user.PhoneNumber, &user.Email)
+        if err != nil {
+                log.Print(err)
+
+                return "", err
+        }
         user.Password = ""
 
         return "Se trajo toda la data", nil
