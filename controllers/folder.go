@@ -76,16 +76,33 @@ func UpdateFolder(c echo.Context) error  {
         })
 }
 
+func DataFolder(c echo.Context) error {
+        id := c.QueryParam("folder")
+        fmt.Printf("%s", id)
 
-func DataFolder(c echo.Context) error  {
+        folder := models.Folder{}
+
+        //se crea el nuevo
+        resp, err := models.Data_Folder(id, &folder)
+        if err != nil {
+                return c.NoContent(500)
+        }
+
+        return c.JSON(http.StatusOK, echo.Map{
+                "message": resp,
+                "folder": folder,
+        })
+}
+
+func DataAllFolder(c echo.Context) error  {
 
         id := c.QueryParam("user")
         fmt.Printf("%s", id)
 
         folder := []models.Folder{}
 
-        //se crea el nuevo usuario
-        resp, err := models.Data_Folder(id, &folder)
+        //se crea el nuevo
+        resp, err := models.Data_All_Folder(id, &folder)
         if err != nil {
                 return c.NoContent(500)
         }

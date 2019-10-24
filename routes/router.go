@@ -29,6 +29,8 @@ func Init(e *echo.Echo)  {
         //Se crean los endpoint
         user(e)
         folder(e)
+        title(e)
+        calendar(e)
 
 
 
