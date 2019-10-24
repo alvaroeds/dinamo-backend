@@ -80,8 +80,48 @@ func Update_Folder(folder *Folder) (string, error) {
         return "Se actualizó tu espacio", nil
 }
 
+func Data_Folder(id string, folfer *Folder) (string, error) {
+        //abrimos conexcion con la BBDD
+        db := configuration.GetConnectionPsql()
+        defer db.Close()
 
-func Data_Folder(id string, folder *[]Folder) (string, error) {
+        //se verifica si el usuario existe
+        q := "select f.id, f.id_user, f.id_room, f.name, f.tags from folder f where f.id=$1"
+
+        stmt, err := db.Prepare(q)
+        if err != nil {
+                fmt.Println("ERROR AL PREPARAR EL REGISTRO")
+
+                return "", err
+        }
+
+        rows, err := stmt.Query(id)
+        if err != nil {
+                fmt.Println("USUARIO O CLAVE NO VALIDO")
+
+                return "", err
+        }
+
+        for rows.Next() {
+                err := rows.Scan(
+                        &folfer.Id,
+                        &folfer.IdUser,
+                        &folfer.IdRoom,
+                        &folfer.Name,
+                        &folfer.Tags,
+                )
+                if err != nil {
+                        fmt.Println("3")
+                        return "", err
+                }
+
+                folfer.Calendar, err = Data_Calendar(folfer.Id)
+        }
+
+        return "Se trajo toda la data", nil
+}
+
+func Data_All_Folder(id string, folder *[]Folder) (string, error) {
         //abrimos conexcion con la BBDD
         db := configuration.GetConnectionPsql()
         defer db.Close()

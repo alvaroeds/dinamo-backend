@@ -12,4 +12,5 @@ func folder(e *echo.Echo)  {
         //traer la data
         e.PUT("/api/v1/folder", controllers.UpdateFolder)
         e.GET("/api/v1/folder", controllers.DataFolder)
+        e.GET("/api/v1/folder/calendar", controllers.DataAllFolder)
 }
