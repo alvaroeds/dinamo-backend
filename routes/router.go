@@ -2,6 +2,7 @@ package routes
 
 import (
         "github.com/alvaroenriqueds/Dinamo/dinamo-backend/controllers"
+        "github.com/alvaroenriqueds/Dinamo/dinamo-backend/images"
         "github.com/labstack/echo"
         "github.com/labstack/echo/middleware"
         "net/http"
@@ -24,9 +25,10 @@ func Init(e *echo.Echo)  {
         }))
 
         //se levanta el front de pruebas
-        e.Static("/", "../public")
+        e.Static("/", "./public")
 
         //Se crean los endpoint
+        images.Images_controller(e)
         user(e)
         folder(e)
         title(e)
