@@ -9,6 +9,16 @@
     <input type="file" id="myFile" name="myFile">
     <button id="btnSend">Enviar</button>
 </form>
-<img src="https://prueba-dinamo01.s3.us-east-2.amazonaws.com/prueba.jpg" alt="">
+<div class="container-img" id="containerImg"></div>
+
+<script type="text/javascript">
+    var urli = "ws://" + window.location.host + "/ws";
+    var wsi = new WebSocket(urli);
+    var containerImg = document.getElementById("containerImg");
+    wsi.onmessage = function (msgi) {
+        containerImg.innerHTML += "<img src=" + msgi.data + ">\n"
+    }
+</script>
+
 </body>
 </html>

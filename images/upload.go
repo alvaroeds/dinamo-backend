@@ -1,10 +1,13 @@
 package images
 
 import (
+        "encoding/json"
         "fmt"
         "github.com/aws/aws-sdk-go/aws"
         "github.com/aws/aws-sdk-go/service/s3/s3manager"
         "github.com/labstack/echo"
+        "golang.org/x/net/websocket"
+        "log"
 )
 
 func imageS3_Upload(c echo.Context) error {
@@ -79,7 +82,22 @@ func imageS3_Upload(c echo.Context) error {
                 return c.String(500, "44444444444444")
         }
 
-        fmt.Println(output)
+        //fmt.Println(output)
+        port := 5051
+        origin := fmt.Sprintf("http://localhost:%d/", port)
+        url := fmt.Sprintf("ws://localhost:%d/ws", port)
+        ws, err := websocket.Dial(url, "", origin)
+        if err != nil {
+                log.Fatal(err)
+        }
 
-        return c.String(500, "todo salio bien")
+        //nombre := "./files/" + handle.Filename
+        j, err := json.Marshal(&output.Location)
+        if _, err := ws.Write(j); err != nil {
+                log.Fatal(err)
+        }
+
+        return c.JSON(500, echo.Map{
+                "url": output.Location,
+        })
 }

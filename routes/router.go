@@ -33,9 +33,12 @@ func Init(e *echo.Echo)  {
         folder(e)
         title(e)
         calendar(e)
-
+        socketRoute(e)
 
 
         e.POST("/upload", controllers.Upload)
         e.GET("/validate", controllers.ValidateToken)
+}
+func socketRoute(e *echo.Echo) {
+        e.GET("/ws", controllers.WebSockets)
 }
