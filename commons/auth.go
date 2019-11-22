@@ -11,7 +11,7 @@ import (
 
 var (
         privateKey *rsa.PrivateKey
-        publicKey *rsa.PublicKey
+        PublicKey *rsa.PublicKey
 )
 
 func init()  {
@@ -30,7 +30,7 @@ func init()  {
                 log.Fatal("No se pudo hacer el parse a privateKey")
         }
 
-        publicKey, err = jwt.ParseRSAPublicKeyFromPEM(publicBytes)
+        PublicKey, err = jwt.ParseRSAPublicKeyFromPEM(publicBytes)
         if err != nil {
                 log.Fatal("No se pudo hacer el parse a publicKey")
         }

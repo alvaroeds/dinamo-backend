@@ -41,10 +41,16 @@ func imageS3_Upload(c echo.Context) error {
                 c.String(500, "3333333333333333")
         }
         */
+        fmt.Println(handle.Filename)
+        fmt.Println(handle.Header.Get("Content-Type"))
+        fmt.Println(handle.Size)
 
+        //fmt.Println(file)
         //UPLOAD
         uploader := s3manager.NewUploader(sess)
         bucket := "prueba-dinamo01"
+
+        //type_file := handle.Header.Get("Content-Type")
 
         output, err := uploader.Upload(&s3manager.UploadInput{
                 ACL:                       aws.String("public-read"),
@@ -81,7 +87,7 @@ func imageS3_Upload(c echo.Context) error {
                 fmt.Println(err)
                 return c.String(500, "44444444444444")
         }
-
+        fmt.Println(output)
         //fmt.Println(output)
         port := 5051
         origin := fmt.Sprintf("http://localhost:%d/", port)

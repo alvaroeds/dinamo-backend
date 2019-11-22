@@ -3,7 +3,7 @@ package controllers
 import (
         "fmt"
         "github.com/alvaroenriqueds/Dinamo/dinamo-backend/models"
-        "github.com/alvaroenriqueds/edcomments/commons"
+        "github.com/alvaroenriqueds/Dinamo/dinamo-backend/commons"
         "github.com/dgrijalva/jwt-go"
         "github.com/dgrijalva/jwt-go/request"
         "github.com/labstack/echo"
